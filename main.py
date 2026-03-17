@@ -35,7 +35,7 @@ while True:
         same_object_detected = False
 
         for id, prev_center in face_centers.items():
-            if distance(center, prev_center) < 500:
+            if distance(center, prev_center) < 100:
                 new_centers[id] = center
                 same_object_detected = True
 
