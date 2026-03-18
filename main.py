@@ -14,6 +14,10 @@ cap = cv2.VideoCapture(0)
 face_centers = {}
 face_id_count = 0
 
+entry_count = 0
+exit_count = 0
+line_y = 250
+
 def get_center(x, y, w, h):
     return (x + w//2, y + h//2)
 
@@ -30,6 +34,7 @@ while True:
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
     new_centers = {}
+    cv2.line(frame, (0, line_y), (640, line_y), (0,255,255), 2)
 
    
     for (x, y, w, h) in faces:
@@ -42,22 +47,28 @@ while True:
                 new_centers[id] = center
                 same_object_detected = True
 
-                cv2.putText(frame, f'ID {id}', (x, y-10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
-                break
+        # ENTRY / EXIT LOGIC
+            if prev_center[1] < line_y and center[1] >= line_y:
+             entry_count += 1
+            elif prev_center[1] > line_y and center[1] <= line_y:
+                exit_count += 1
 
-        if not same_object_detected:
-            face_id_count += 1
-            new_centers[face_id_count] = center
+            cv2.putText(frame, f'ID {id}', (x, y-10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+            break
 
-            cv2.putText(frame, f'ID {face_id_count}', (x, y-10),
+            if not same_object_detected:
+                face_id_count += 1
+                new_centers[face_id_count] = center
+
+                cv2.putText(frame, f'ID {face_id_count}', (x, y-10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
 
        
-        face_img = frame[y:y+h, x:x+w]
-        cv2.imwrite(f"faces/face_{face_id_count}_{x}.jpg", face_img)
+            face_img = frame[y:y+h, x:x+w]
+            cv2.imwrite(f"faces/face_{face_id_count}_{x}.jpg", face_img)
 
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255,0,0), 2)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (255,0,0), 2)
 
     
     for id in new_centers:
@@ -65,6 +76,11 @@ while True:
 
     cv2.putText(frame, f'Total: {len(face_centers)}', (10,30),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+    cv2.putText(frame, f'Entry: {entry_count}', (10,60),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,0), 2)
+
+    cv2.putText(frame, f'Exit: {exit_count}', (10,90),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,255), 2)
 
     cv2.imshow("VisiTrack AI - Tracking", frame)
 
