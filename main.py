@@ -1,14 +1,16 @@
 import cv2
 import math
+import os
 
-# Load face detection model
+if not os.path.exists("faces"):
+    os.makedirs("faces")
+
 face_cascade = cv2.CascadeClassifier(
     cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
 )
 
 cap = cv2.VideoCapture(0)
 
-# Store previous face positions
 face_centers = {}
 face_id_count = 0
 
@@ -29,9 +31,10 @@ while True:
 
     new_centers = {}
 
+   
     for (x, y, w, h) in faces:
-        center = get_center(x, y, w, h)
 
+        center = get_center(x, y, w, h)
         same_object_detected = False
 
         for id, prev_center in face_centers.items():
@@ -50,10 +53,15 @@ while True:
             cv2.putText(frame, f'ID {face_id_count}', (x, y-10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
 
+       
+        face_img = frame[y:y+h, x:x+w]
+        cv2.imwrite(f"faces/face_{face_id_count}_{x}.jpg", face_img)
+
         cv2.rectangle(frame, (x, y), (x+w, y+h), (255,0,0), 2)
 
+    
     for id in new_centers:
-     face_centers[id] = new_centers[id]
+        face_centers[id] = new_centers[id]
 
     cv2.putText(frame, f'Total: {len(face_centers)}', (10,30),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
