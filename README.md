@@ -7,6 +7,4 @@ It assigns unique IDs to detected faces, counts entries and exits using line-cro
 
 Tech Stack:
 
-Python
-OpenCV
-NumPy
+Python,OpenCV,NumPy
