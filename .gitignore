@@ -1,4 +1,12 @@
+# Virtual environment
 .venv/
+
+# Dataset
+faces/
+
+# Python cache
 __pycache__/
 *.pyc
-faces/
+
+# OS files
+.DS_Store
